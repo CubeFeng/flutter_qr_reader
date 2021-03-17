@@ -14,6 +14,7 @@ class QrcodeReaderView extends StatefulWidget {
   final double scanBoxRatio;
   final Color boxLineColor;
   final Widget helpWidget;
+  final String scanTips;
 
   QrcodeReaderView({
     Key key,
@@ -22,6 +23,7 @@ class QrcodeReaderView extends StatefulWidget {
     this.boxLineColor = Colors.blueAccent,
     this.helpWidget,
     this.scanBoxRatio = 0.6,
+    this.scanTips = ''
   }) : super(key: key);
 
   @override
@@ -192,7 +194,7 @@ class QrcodeReaderViewState extends State<QrcodeReaderView> with TickerProviderS
                 alignment: Alignment.center,
                 child: DefaultTextStyle(
                   style: TextStyle(color: Colors.white),
-                  child: widget.helpWidget ?? Text("请将二维码置于方框中"),
+                  child: widget.helpWidget ?? Text(widget.scanTips),
                 ),
               ),
             ),
@@ -320,6 +322,7 @@ class QrScanBoxPainter extends CustomPainter {
 
     canvas.drawPath(path, borderPaint);
 
+    // 功能？
     canvas.clipRRect(BorderRadius.all(Radius.circular(12)).toRRect(Offset.zero & size));
 
     // 绘制横向网格

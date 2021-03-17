@@ -1,18 +1,15 @@
 package me.hetian.flutter_qr_reader.views;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.PointF;
-import android.hardware.Camera;
 import android.view.View;
-
-import com.google.zxing.client.android.camera.CameraManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -25,6 +22,7 @@ public class QrReaderView implements PlatformView, QRCodeReaderView.OnQRCodeRead
     private final Context mContext;
     private Map<String, Object> mParams;
     private PluginRegistry.Registrar mRegistrar;
+    private FlutterPlugin.FlutterPluginBinding binding;
     QRCodeReaderView _view;
 
     public static String EXTRA_FOCUS_INTERVAL = "extra_focus_interval";
@@ -50,6 +48,29 @@ public class QrReaderView implements PlatformView, QRCodeReaderView.OnQRCodeRead
 
         // 操作监听
         mMethodChannel = new MethodChannel(registrar.messenger(), "me.hetian.flutter_qr_reader.reader_view_" + id);
+        mMethodChannel.setMethodCallHandler(this);
+    }
+
+    public QrReaderView(Context context, FlutterPlugin.FlutterPluginBinding binding, int id, Map<String, Object> params){
+        this.mContext = context;
+        this.mParams = params;
+        this.binding = binding;
+
+        // 创建视图
+        int width = (int) mParams.get("width");
+        int height = (int) mParams.get("height");
+        _view = new QRCodeReaderView(mContext);
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(width, height);
+        _view.setLayoutParams(layoutParams);
+        _view.setOnQRCodeReadListener(this);
+        _view.setQRDecodingEnabled(true);
+        _view.forceAutoFocus();
+        int interval = mParams.containsKey(EXTRA_FOCUS_INTERVAL) ? (int) mParams.get(EXTRA_FOCUS_INTERVAL) : 2000;
+        _view.setAutofocusInterval(interval);
+        _view.setTorchEnabled((boolean)mParams.get(EXTRA_TORCH_ENABLED));
+
+        // 操作监听
+        mMethodChannel = new MethodChannel(binding.getBinaryMessenger(), "me.hetian.flutter_qr_reader.reader_view_" + id);
         mMethodChannel.setMethodCallHandler(this);
     }
 

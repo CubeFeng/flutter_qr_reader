@@ -22,6 +22,7 @@ class _ScanViewDemoState extends State<ScanViewDemo> {
       body: QrcodeReaderView(
         key: _key,
         onScan: onScan,
+        scanTips: "请将二维码置于方框中",
         headerWidget: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0.0,
